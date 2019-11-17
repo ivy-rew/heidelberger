@@ -1,9 +1,12 @@
 
 package ch.monokellabs.heidelberger;
 
+import java.util.Arrays;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
 
 public class CatechismParser {
 
@@ -18,6 +21,7 @@ public class CatechismParser {
 	{
 		Element content = heidelberger();
 		sonntagAsH2(content);
+		bibleRefs(content);
 		cleanEndLinks(content);
 		return content.toString();
 	}
@@ -33,6 +37,30 @@ public class CatechismParser {
 			titleElem.appendText(title);
 			sonntag.replaceWith(titleElem);
 		});
+	}
+
+	private static final String externalBibleUriBase = "https://www.bibleserver.com/SLT/";
+
+	private void bibleRefs(Element content) {
+		content.getElementsByClass("content_def3").forEach(bibRef -> {
+			String[] refs = bibRef.ownText().split("/");
+			Element refWrapper = asLinks(refs);
+			bibRef.replaceWith(refWrapper);
+		});
+	}
+
+	private Element asLinks(String[] refs) {
+		Element refWrapper = html.createElement("div");
+		Arrays.stream(refs).map(refRaw ->
+		{
+			String verse = refRaw.trim();
+			Element linked = html.createElement("a");
+			linked.appendText(verse);
+			linked.attr("href", externalBibleUriBase + verse);
+			return linked;
+		})
+		.forEach(link -> refWrapper.appendChild(link));
+		return refWrapper;
 	}
 
 	private void cleanEndLinks(Element content) {
