@@ -13,14 +13,16 @@ public class CatechismLoader
 {
     public static String getCatechismHtml() throws IOException, InterruptedException
     {
-    	File cached = new File("target", "catechism.html");
+    	File cached = new File(System.getProperty("java.io.tmpdir"), "/heidelberger/catechism.html");
     	if (cached.exists()){
     		return Files.readString(cached.toPath());
     	}
     	else
     	{
     		String html = downloadCatechism();
+    		cached.getParentFile().mkdirs();
     		Files.writeString(cached.toPath(), html, StandardOpenOption.CREATE_NEW);
+    		System.out.println("caching catechism in "+cached);
     		return html;
     	}
     }
