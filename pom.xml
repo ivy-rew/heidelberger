@@ -21,6 +21,29 @@
 			<artifactId>jsoup</artifactId>
 			<version>1.12.1</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.crosswire</groupId>
+			<artifactId>jsword</artifactId>
+			<version>1.6</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/jsword/jsword-1.6.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.crosswire</groupId>
+			<artifactId>jsword-common</artifactId>
+			<version>1.6</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/jsword/jsword-common-1.6.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/jsword/jdom-1.0.jar</systemPath>
+		</dependency>
+
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>

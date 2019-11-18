@@ -8,7 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
+import org.crosswire.jsword.book.BookException;
+import org.crosswire.jsword.passage.NoSuchKeyException;
 import org.junit.jupiter.api.Test;
+
 
 public class HeidelbergerTest
 {
@@ -27,5 +30,14 @@ public class HeidelbergerTest
 		assertThat(main).isNotEmpty();
 		Path testOut = new File("target/extract.html").toPath();
 		Files.writeString(testOut, main, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+	}
+
+	@Test
+	public void sword() throws BookException, NoSuchKeyException
+	{
+		LocalSword sword = new LocalSword();
+		String ref = sword.getPlainText("GerSch", "Prov 4:23");
+		System.out.println(ref);
+		assertThat(ref).contains("Mehr als alles andere behüte dein Herz");
 	}
 }
