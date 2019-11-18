@@ -15,9 +15,20 @@ import org.crosswire.jsword.passage.Passage;
 
 public class LocalSword {
 
-	public String getPlainText(String bookInitials, String reference) throws BookException, NoSuchKeyException
+	public final Book book;
+
+	public LocalSword(String bookInitials)
 	{
-		Book book = getBook(bookInitials);
+		this.book = getBook(bookInitials);
+	}
+
+	private static Book getBook(String bookInitials)
+    {
+        return Books.installed().getBook(bookInitials);
+    }
+
+	public String getPlainText(String reference) throws BookException, NoSuchKeyException
+	{
 		if (book == null) {
 			return "";
 		}
@@ -32,14 +43,12 @@ public class LocalSword {
      * @param bookInitials the book to use
      * @param reference a reference, appropriate for the book, of one or more entries
      */
-    public SAXEventProvider getOSIS(String bookInitials, String reference, int maxKeyCount) throws BookException, NoSuchKeyException
+    private SAXEventProvider getOSIS(String reference, int maxKeyCount) throws BookException, NoSuchKeyException
     {
-        if (bookInitials == null || reference == null)
+        if (reference == null)
         {
             return null;
         }
-
-        Book book = getBook(bookInitials);
 
         Key key = null;
         if (BookCategory.BIBLE.equals(book.getBookCategory()))
@@ -65,12 +74,7 @@ public class LocalSword {
         }
 
         BookData data = new BookData(book, key);
-
         return data.getSAXEventProvider();
     }
 
-    public Book getBook(String bookInitials)
-    {
-        return Books.installed().getBook(bookInitials);
-    }
 }

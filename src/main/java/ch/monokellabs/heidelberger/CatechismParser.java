@@ -2,10 +2,15 @@
 package ch.monokellabs.heidelberger;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.crosswire.jsword.book.BookException;
+import org.crosswire.jsword.passage.NoSuchKeyException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 
 public class CatechismParser {
@@ -42,26 +47,50 @@ public class CatechismParser {
 	private static final String externalBibleUriBase = "https://www.bibleserver.com/SLT/";
 
 	private void bibleRefs(Element content) {
-		content.getElementsByClass("content_def3").forEach(bibRef -> {
+		getBibleRefElements(content).forEach(bibRef -> {
 			String[] refs = bibRef.ownText().split("/");
 			Element refWrapper = asLinks(refs);
 			bibRef.replaceWith(refWrapper);
 		});
 	}
 
+	public List<String> getAllRefs()
+	{
+		return getBibleRefElements(heidelberger()).stream()
+			.flatMap(refSection -> Arrays.stream(refSection.ownText().split("/")))
+			.map(String::trim)
+			.map(SwordRefParser::parseBibRef)
+			.collect(Collectors.toList());
+	}
+
+	private Elements getBibleRefElements(Element content) {
+		return content.getElementsByClass("content_def3");
+	}
+
 	private Element asLinks(String[] refs) {
 		Element refWrapper = html.createElement("div");
-		Arrays.stream(refs).map(refRaw ->
+		Arrays.stream(refs).forEach(refRaw ->
 		{
 			String verse = refRaw.trim();
 			Element linked = html.createElement("a");
 			linked.appendText(verse);
 			linked.attr("href", externalBibleUriBase + verse);
-			return linked;
-		})
-		.forEach(link -> refWrapper.appendChild(link));
+			refWrapper.appendChild(linked);
+
+			try {
+				String parsed = SwordRefParser.parseBibRef(verse);
+				String text = sword.getPlainText(parsed);
+				Element cit = html.createElement("span");
+				cit.appendText(text);
+				refWrapper.appendChild(cit);
+			} catch (BookException | NoSuchKeyException e) {
+				e.printStackTrace();
+			}
+		});
 		return refWrapper;
 	}
+
+	private final LocalSword sword = new LocalSword("GerSch");
 
 	private void cleanEndLinks(Element content) {
 		content.getElementsByClass("content_fuss").forEach(Element::remove);
