@@ -3,7 +3,9 @@ package ch.monokellabs.heidelberger;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.crosswire.jsword.book.BookException;
 import org.crosswire.jsword.passage.NoSuchKeyException;
@@ -15,7 +17,7 @@ import org.jsoup.select.Elements;
 
 public class CatechismParser {
 
-	private Document html;
+	private final Document html;
 
 	public CatechismParser(String html)
 	{
@@ -47,8 +49,11 @@ public class CatechismParser {
 	private static final String externalBibleUriBase = "https://www.bibleserver.com/SLT/";
 
 	private void bibleRefs(Element content) {
-		getBibleRefElements(content).forEach(bibRef -> {
-			String[] refs = bibRef.ownText().split("/");
+		getBibleRefElements(content)
+		.forEach(bibRef -> {
+			Stream<String> refs = Arrays.stream(bibRef.ownText().split("/"))
+				.flatMap(CatechismParser::splitMultiRef)
+				.filter(Objects::nonNull);
 			Element refWrapper = asLinks(refs);
 			bibRef.replaceWith(refWrapper);
 		});
@@ -58,18 +63,53 @@ public class CatechismParser {
 	{
 		return getBibleRefElements(heidelberger()).stream()
 			.flatMap(refSection -> Arrays.stream(refSection.ownText().split("/")))
+			.flatMap(CatechismParser::splitMultiRef)
 			.map(String::trim)
-			.map(SwordRefParser::parseBibRef)
+			.map(SwordRef::parse)
+			.filter(Objects::nonNull)
+			.map(SwordRef::enKey)
 			.collect(Collectors.toList());
+	}
+
+	public static Stream<String> splitMultiRef(String ref)
+	{
+		if (!ref.contains(";"))
+		{
+			return Stream.of(ref);
+		}
+		String[] refs = ref.split(";");
+		SwordRef firstRef = SwordRef.parse(refs[0]);
+		if (firstRef == null)
+		{
+			System.err.println("can't split "+ref);
+			return Stream.of(ref);
+		}
+
+		String book = firstRef.getBook();
+
+		return Arrays.stream(refs)
+		  .map(abbRevRef -> {
+			  if (abbRevRef.contains(book))
+			  {
+				  return abbRevRef; // full rev (first)
+			  }
+			  StringBuilder fullRev = new StringBuilder();
+			  fullRev.append(book);
+			  if (!abbRevRef.startsWith(" "))
+			  {
+				  fullRev.append(" ");
+			  }
+			  return fullRev.append(abbRevRef).toString();
+		  });
 	}
 
 	private Elements getBibleRefElements(Element content) {
 		return content.getElementsByClass("content_def3");
 	}
 
-	private Element asLinks(String[] refs) {
+	private Element asLinks(Stream<String> refs) {
 		Element refWrapper = html.createElement("div");
-		Arrays.stream(refs).forEach(refRaw ->
+		refs.forEach(refRaw ->
 		{
 			String verse = refRaw.trim();
 			Element linked = html.createElement("a");
@@ -78,11 +118,15 @@ public class CatechismParser {
 			refWrapper.appendChild(linked);
 
 			try {
-				String parsed = SwordRefParser.parseBibRef(verse);
-				String text = sword.getPlainText(parsed);
-				Element cit = html.createElement("span");
-				cit.appendText(text);
-				refWrapper.appendChild(cit);
+				SwordRef parsed = SwordRef.parse(verse);
+				if (parsed != null)
+				{
+					String text = sword.getPlainText(parsed.enKey());
+					Element cit = html.createElement("span");
+					cit.attr("style", "display:block");
+					cit.appendText(text);
+					refWrapper.appendChild(cit);
+				}
 			} catch (BookException | NoSuchKeyException e) {
 				e.printStackTrace();
 			}

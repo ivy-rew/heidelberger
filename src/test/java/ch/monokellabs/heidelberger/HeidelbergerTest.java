@@ -59,7 +59,7 @@ public class HeidelbergerTest
 	{
 		String html = CatechismLoader.getCatechismHtml();
 		List<String> bibleRefs = new CatechismParser(html).getAllRefs();
-		//bibleRefs.forEach(System.out::println);
+		assertThat(bibleRefs).hasSizeGreaterThan(809);
 
 		LocalSword sword = new LocalSword("GerSch");
 		List<String> unresolvable = bibleRefs.stream().map(ref -> {
@@ -78,22 +78,38 @@ public class HeidelbergerTest
 
 		System.out.println("not resolved: "+unresolvable.size()+" out of "+bibleRefs.size());
 
-		assertThat(unresolvable).hasSizeLessThan(25);
+		assertThat(unresolvable).hasSizeLessThan(27);
 	}
 
 	LocalSword sword = new LocalSword("GerSch");
 
 	@Test
-	public void refParser() throws Exception
+	public void refSplitMulti()
 	{
-		assertThat(lookup(SwordRefParser.parseBibRef("1. Joh 3, 8"))).isEqualTo("1 Joh 3:8");
-		assertThat(lookup(SwordRefParser.parseBibRef("Röm 14, 8"))).isEqualTo("Rom 14:8");
-		assertThat(lookup(SwordRefParser.parseBibRef("1. Mose 3"))).isEqualTo("Gen 3");
+		assertThat(CatechismParser.splitMultiRef("Ps 51, 20; 122, 6-7"))
+			.containsExactly(
+					"Ps 51, 20",
+					"Ps 122, 6-7");
+		assertThat(CatechismParser.splitMultiRef("Hebr 4, 2-3;10, 39"))
+		.containsExactly(
+				"Hebr 4, 2-3",
+				"Hebr 10, 39");
+
+
+
 	}
 
-	private String lookup(String parseBibRef) throws NoSuchKeyException {
-		sword.book.getKey(parseBibRef);
-		return parseBibRef;
+	@Test
+	public void refParser() throws Exception
+	{
+		assertThat(lookup(SwordRef.parse("1. Joh 3, 8"))).isEqualTo("1 Joh 3:8");
+		assertThat(lookup(SwordRef.parse("Röm 14, 8"))).isEqualTo("Rom 14:8");
+		assertThat(lookup(SwordRef.parse("1. Mose 3"))).isEqualTo("Gen 3");
+	}
+
+	private String lookup(SwordRef parseBibRef) throws NoSuchKeyException {
+		sword.book.getKey(parseBibRef.enKey());
+		return parseBibRef.enKey();
 	}
 
 }
