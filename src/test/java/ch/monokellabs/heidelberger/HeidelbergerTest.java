@@ -94,9 +94,6 @@ public class HeidelbergerTest
 		.containsExactly(
 				"Hebr 4, 2-3",
 				"Hebr 10, 39");
-
-
-
 	}
 
 	@Test
@@ -105,6 +102,7 @@ public class HeidelbergerTest
 		assertThat(lookup(SwordRef.parse("1. Joh 3, 8"))).isEqualTo("1 Joh 3:8");
 		assertThat(lookup(SwordRef.parse("Röm 14, 8"))).isEqualTo("Rom 14:8");
 		assertThat(lookup(SwordRef.parse("1. Mose 3"))).isEqualTo("Gen 3");
+		assertThat(lookup(SwordRef.parse("Mt 10, 29-31"))).isEqualTo("Mt 10:29-31");
 	}
 
 	private String lookup(SwordRef parseBibRef) throws NoSuchKeyException {
