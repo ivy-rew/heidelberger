@@ -74,16 +74,7 @@ public class CatechismParser {
 
 	public static Stream<String> splitMultiRef(String ref)
 	{
-		if (ref.contains(";"))
-		{
-			String[] refs = ref.split(";");
-			SwordRef firstRef = SwordRef.parse(refs[0]);
-			if (firstRef != null)
-			{
-				return appendIfMissing(refs, firstRef.getBook());
-			}
-		}
-		else if (ref.contains(".") && !ref.startsWith("Das"))
+		if (ref.lastIndexOf(".") > 3 && !ref.startsWith("Das"))
 		{
 			String[] refs = new String[] { // does not scale: only one separator :-/
 				StringUtils.substringBeforeLast(ref, "."),
@@ -94,6 +85,15 @@ public class CatechismParser {
 			{
 				String prefix = firstRef.getBook()+" "+firstRef.chapter+",";
 				return appendIfMissing(refs, prefix);
+			}
+		}
+		else if (ref.contains(";"))
+		{
+			String[] refs = ref.split(";");
+			SwordRef firstRef = SwordRef.parse(refs[0]);
+			if (firstRef != null)
+			{
+				return appendIfMissing(refs, firstRef.getBook());
 			}
 		}
 		return Stream.of(ref);

@@ -76,6 +76,7 @@ public class HeidelbergerTest
 		.filter(Objects::nonNull)
 		.collect(Collectors.toList());
 
+		unresolvable.forEach(System.out::println);
 		System.out.println("not resolved: "+unresolvable.size()+" out of "+bibleRefs.size());
 
 		assertThat(unresolvable).hasSizeLessThan(18);
