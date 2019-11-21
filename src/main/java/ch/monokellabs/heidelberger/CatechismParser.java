@@ -29,6 +29,7 @@ public class CatechismParser {
 	{
 		Element content = heidelberger();
 		sonntagAsH2(content);
+		questionAsH3(content);
 		bibleRefs(content);
 		cleanEndLinks(content);
 		return content.toString();
@@ -40,10 +41,22 @@ public class CatechismParser {
 
 	private void sonntagAsH2(Element content) {
 		content.getElementsByClass("hk-def-1").forEach(sonntag -> {
-			String title = sonntag.ownText();
+			String title = sonntag.text().toString();
 			Element titleElem = html.createElement("h2");
 			titleElem.appendText(title);
 			sonntag.replaceWith(titleElem);
+		});
+	}
+
+	private void questionAsH3(Element content) {
+		content.getElementsByClass("hk-def-2").forEach(question -> {
+			String title = question.text().toString();
+			if (title.startsWith("Frage"))
+			{
+				Element titleElem = html.createElement("h3");
+				titleElem.appendText(title);
+				question.replaceWith(titleElem);
+			}
 		});
 	}
 
