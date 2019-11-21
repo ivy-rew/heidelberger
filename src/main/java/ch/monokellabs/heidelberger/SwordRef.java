@@ -13,15 +13,24 @@ import org.apache.commons.lang3.StringUtils;
 public class SwordRef
 {
 	private static final Pattern DE_REF = Pattern.compile("([0-9]*)\\.*\\s*([^\\s]+) ?([0-9]+)[\\, ]*([0-9\\-]*)");
+	private static final Pattern COMMANDMENT = Pattern.compile("Das ([0-9]*)\\. Gebot");
+
 
 	private final String bookNo;
 	private final String book;
-	private final int chapter;
+	public final int chapter;
 	private final String verseRange;
 
 	public static SwordRef parse(String ref)
 	{
-		Matcher matcher = DE_REF.matcher(ref.trim());
+		Matcher matcher = COMMANDMENT.matcher(ref.trim());
+		if (matcher.find())
+		{
+			Integer no = Integer.parseInt(matcher.group(1));
+			return new SwordRef("", "Deu", 5, COMMAND_NO_TO_VERSE.get(no));
+		}
+
+		matcher = DE_REF.matcher(ref.trim());
 		if (matcher.find())
 		{
 			String bookNo = matcher.group(1);
@@ -78,7 +87,6 @@ public class SwordRef
 	{
 		DE_EN.put(deBook, enBook);
 	}
-
 	static
 	{
 		trans("Röm", "Rom");
@@ -102,4 +110,24 @@ public class SwordRef
 		trans("4. Mose", "Num");
 		trans("5. Mose", "Deu");
 	}
+
+	private static final Map<Integer, String> COMMAND_NO_TO_VERSE = new HashMap<>();
+	private static void command(int no, String verse)
+	{
+		COMMAND_NO_TO_VERSE.put(no, verse);
+	}
+	static {
+		command(1, "7");
+		command(2, "8-10");
+		command(3, "11");
+		command(4, "12-15");
+		command(5, "16");
+		command(6, "17");
+		command(7, "18");
+		command(8, "19");
+		command(9, "20");
+		command(10, "21");
+	}
+
+
 }

@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.crosswire.jsword.book.BookException;
 import org.crosswire.jsword.passage.NoSuchKeyException;
 import org.jsoup.Jsoup;
@@ -73,34 +74,46 @@ public class CatechismParser {
 
 	public static Stream<String> splitMultiRef(String ref)
 	{
-		if (!ref.contains(";"))
+		if (ref.contains(";"))
 		{
-			return Stream.of(ref);
+			String[] refs = ref.split(";");
+			SwordRef firstRef = SwordRef.parse(refs[0]);
+			if (firstRef != null)
+			{
+				return appendIfMissing(refs, firstRef.getBook());
+			}
 		}
-		String[] refs = ref.split(";");
-		SwordRef firstRef = SwordRef.parse(refs[0]);
-		if (firstRef == null)
+		else if (ref.contains(".") && !ref.startsWith("Das"))
 		{
-			System.err.println("can't split "+ref);
-			return Stream.of(ref);
+			String[] refs = new String[] { // does not scale: only one separator :-/
+				StringUtils.substringBeforeLast(ref, "."),
+				StringUtils.substringAfterLast(ref, ".")
+			};
+			SwordRef firstRef = SwordRef.parse(refs[0]);
+			if (firstRef != null)
+			{
+				String prefix = firstRef.getBook()+" "+firstRef.chapter+",";
+				return appendIfMissing(refs, prefix);
+			}
 		}
+		return Stream.of(ref);
+	}
 
-		String book = firstRef.getBook();
-
+	private static Stream<String> appendIfMissing(String[] refs, String prefix) {
 		return Arrays.stream(refs)
-		  .map(abbRevRef -> {
-			  if (abbRevRef.contains(book))
-			  {
-				  return abbRevRef; // full rev (first)
-			  }
-			  StringBuilder fullRev = new StringBuilder();
-			  fullRev.append(book);
-			  if (!abbRevRef.startsWith(" "))
-			  {
-				  fullRev.append(" ");
-			  }
-			  return fullRev.append(abbRevRef).toString();
-		  });
+			.map(abbRevRef -> {
+				if (abbRevRef.contains(prefix))
+				{
+					return abbRevRef; // full rev (first)
+				}
+				StringBuilder fullRev = new StringBuilder();
+				fullRev.append(prefix);
+				if (!abbRevRef.startsWith(" "))
+				{
+					fullRev.append(" ");
+				}
+				return fullRev.append(abbRevRef).toString();
+			});
 	}
 
 	private Elements getBibleRefElements(Element content) {

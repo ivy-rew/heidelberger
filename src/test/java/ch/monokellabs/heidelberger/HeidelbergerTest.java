@@ -78,7 +78,7 @@ public class HeidelbergerTest
 
 		System.out.println("not resolved: "+unresolvable.size()+" out of "+bibleRefs.size());
 
-		assertThat(unresolvable).hasSizeLessThan(27);
+		assertThat(unresolvable).hasSizeLessThan(18);
 	}
 
 	LocalSword sword = new LocalSword("GerSch");
@@ -94,6 +94,11 @@ public class HeidelbergerTest
 		.containsExactly(
 				"Hebr 4, 2-3",
 				"Hebr 10, 39");
+		assertThat(CatechismParser.splitMultiRef("1. Kor 15, 21-22.25-26"))
+			.containsExactly(
+				"1. Kor 15, 21-22",
+				"1. Kor 15, 25-26");
+
 	}
 
 	@Test
@@ -103,6 +108,8 @@ public class HeidelbergerTest
 		assertThat(lookup(SwordRef.parse("Röm 14, 8"))).isEqualTo("Rom 14:8");
 		assertThat(lookup(SwordRef.parse("1. Mose 3"))).isEqualTo("Gen 3");
 		assertThat(lookup(SwordRef.parse("Mt 10, 29-31"))).isEqualTo("Mt 10:29-31");
+
+		assertThat(lookup(SwordRef.parse("Das 1. Gebot"))).isEqualTo("Deu 5:7");
 	}
 
 	private String lookup(SwordRef parseBibRef) throws NoSuchKeyException {
