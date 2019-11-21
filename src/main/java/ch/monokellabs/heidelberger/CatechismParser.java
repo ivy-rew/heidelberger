@@ -31,6 +31,7 @@ public class CatechismParser {
 		sonntagAsH2(content);
 		questionAsH3(content);
 		bibleRefs(content);
+		cleanHkDef(content);
 		cleanEndLinks(content);
 		return content.toString();
 	}
@@ -58,6 +59,22 @@ public class CatechismParser {
 				question.replaceWith(titleElem);
 			}
 		});
+	}
+
+	private void cleanHkDef(Element content) {
+		content.getElementsByClass("hk-def-3").forEach(this::cleanDef);
+		content.getElementsByClass("hk-def-2").forEach(this::cleanDef);
+	}
+
+	private void cleanDef(Element hkDef3) {
+		Element parent = hkDef3.parent();
+		if (hkDef3.hasParent() && parent.normalName().startsWith("h"))
+		{
+			String title = hkDef3.text().toString();
+			Element titleElem = html.createElement(parent.normalName());
+			titleElem.appendText(title);
+			hkDef3.replaceWith(titleElem);
+		}
 	}
 
 	private static final String externalBibleUriBase = "https://www.bibleserver.com/SLT/";
