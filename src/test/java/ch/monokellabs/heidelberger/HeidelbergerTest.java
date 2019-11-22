@@ -33,7 +33,7 @@ public class HeidelbergerTest
 		String main = new CatechismParser(html).getMain();
 		assertThat(main).isNotEmpty();
 		Path testOut = new File("target/extract.html").toPath();
-		Files.writeString(testOut, main, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+		Files.writeString(testOut, main, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
 	}
 
 	@Test
