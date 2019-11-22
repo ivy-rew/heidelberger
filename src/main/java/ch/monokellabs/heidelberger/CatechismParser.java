@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.crosswire.jsword.book.BookException;
-import org.crosswire.jsword.passage.NoSuchKeyException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -31,7 +29,7 @@ public class CatechismParser {
 		sonntagAsH2(content);
 		questionAsH3(content);
 
-		RefHandler linker = (bibRef, refs) -> refStrategy(bibRef, refs);
+		RefHandler linker = new InlineResolvedRevsHtml(tag -> html.createElement(tag));
 		bibleRefs(content, linker);
 
 		cleanHkDef(content);
@@ -80,8 +78,6 @@ public class CatechismParser {
 		}
 	}
 
-	private static final String externalBibleUriBase = "https://www.bibleserver.com/SLT/";
-
 	private void bibleRefs(Element content, RefHandler handler) {
 		getBibleRefElements(content)
 		.forEach(bibRef -> {
@@ -97,39 +93,6 @@ public class CatechismParser {
 	{
 		public void transform(Element bibRef, Stream<String> refs);
 	}
-
-	private void refStrategy(Element bibRef, Stream<String> refs) {
-		Element refWrapper = asLinks(refs);
-		bibRef.replaceWith(refWrapper);
-	}
-
-	private Element asLinks(Stream<String> refs) {
-		Element refWrapper = html.createElement("div");
-		refs.forEach(refRaw ->
-		{
-			String verse = refRaw.trim();
-			Element linked = html.createElement("a");
-			linked.appendText(verse);
-			linked.attr("href", externalBibleUriBase + verse);
-			refWrapper.appendChild(linked);
-
-			try {
-				SwordRef parsed = SwordRef.parse(verse);
-				if (parsed != null)
-				{
-					String text = sword.getPlainText(parsed.enKey());
-					Element cit = html.createElement("span");
-					cit.attr("style", "display:block");
-					cit.appendText(text);
-					refWrapper.appendChild(cit);
-				}
-			} catch (BookException | NoSuchKeyException e) {
-				e.printStackTrace();
-			}
-		});
-		return refWrapper;
-	}
-
 
 	public List<String> getAllRefs()
 	{
@@ -190,8 +153,6 @@ public class CatechismParser {
 	private Elements getBibleRefElements(Element content) {
 		return content.getElementsByClass("content_def3");
 	}
-
-	private final LocalSword sword = new LocalSword("GerSch");
 
 	private void cleanEndLinks(Element content) {
 		content.getElementsByClass("content_fuss").forEach(Element::remove);
