@@ -28,17 +28,26 @@ public class CatechismParser {
 		Element content = heidelberger();
 		sonntagAsH2(content);
 		questionAsH3(content);
+		cleanEndLinks(content);
 
-		RefHandler linker = new InlineResolvedRevsHtml(tag -> html.createElement(tag));
-		bibleRefs(content, linker);
+		bibleRefs(content, new InlineResolvedRevsHtml(tag -> html.createElement(tag)));
 
 		cleanHkDef(content);
-		cleanEndLinks(content);
+		content = asBody(content);
 		return content.toString();
 	}
 
 	private Element heidelberger() {
 		return html.getElementById("content_block_middle_text");
+	}
+
+	private Element asBody(Element wrapper) {
+		Element body = html.createElement("body");
+		Elements children = wrapper.getAllElements();
+		children.remove(wrapper);
+		children.forEach(child -> body.appendChild(child));
+		wrapper.replaceWith(body);
+		return body;
 	}
 
 	private void sonntagAsH2(Element content) {
@@ -156,6 +165,7 @@ public class CatechismParser {
 
 	private void cleanEndLinks(Element content) {
 		content.getElementsByClass("content_fuss").forEach(Element::remove);
+		content.getElementsByTag("a").forEach(Element::remove);
 	}
 
 }
