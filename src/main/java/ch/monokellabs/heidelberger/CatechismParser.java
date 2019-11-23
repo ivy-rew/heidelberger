@@ -30,7 +30,7 @@ public class CatechismParser {
 		questionAsH3(content);
 		cleanEndLinks(content);
 
-		bibleRefs(content, new InlineResolvedRevsHtml(tag -> html.createElement(tag)));
+		bibleRefs(content, new InlineResolvedFootnotes());
 
 		cleanHkDef(content);
 		content = asBody(content);
