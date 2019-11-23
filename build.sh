@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#mvn clean verify
+mvn clean test
 
 pandoc --atx-headers\
  -f html\
@@ -11,6 +11,7 @@ sed -i "s/\s\{4,\}\[/\[/g" target/heidelberger.md
 sed -i "s/\\\//g" target/heidelberger.md
 
 pandoc --toc --epub-chapter-level=2\
- -o target/heidelberger.epub target/heidelberger.md
+ -o target/heidelberger.epub\
+ bookMeta.md target/heidelberger.md
 
 ebook-viewer target/heidelberger.epub
