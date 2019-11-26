@@ -161,6 +161,7 @@ public class CatechismParser {
 	private static final String QUEST96_JES40 = "Jes; 40, 18-20.25";
 	private static final String QUEST123_PS = "Ps 51, 20";
 	private static final String QUEST110_PS = "Ps 15, 55";
+	private static final String QUEST108_JUD = "Jud 22, 23";
 
 	public static Stream<String> splitMultiRef(String ref)
 	{
@@ -180,6 +181,10 @@ public class CatechismParser {
 		else if (QUEST110_PS.equals(ref))
 		{ // must have been a typo...
 			ref = ref.replace("55", "5");
+		}
+		else if (QUEST108_JUD.equals(ref))
+		{ // has only one chapter which is often omitted
+			ref =  "Jude 22-23";
 		}
 
 		if (ref.lastIndexOf(".") > 3 && !ref.startsWith("Das"))

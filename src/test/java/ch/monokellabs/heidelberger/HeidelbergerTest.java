@@ -79,7 +79,7 @@ public class HeidelbergerTest
 		unresolvable.forEach(System.out::println);
 		System.out.println("not resolved: "+unresolvable.size()+" out of "+bibleRefs.size());
 
-		assertThat(unresolvable).hasSizeLessThan(7);
+		assertThat(unresolvable).hasSizeLessThan(6);
 	}
 
 	LocalSword sword = new LocalSword("GerSch");

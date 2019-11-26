@@ -114,6 +114,7 @@ public class SwordRef
 		trans("Kön", "Ki");
 		trans("Sach", "Zec");
 		trans("Petr", "Pet");
+		trans("Jud", "Jude"); // avoid collision with judges
 
 		trans("1. Mose", "Gen");
 		trans("2. Mose", "Exo");
