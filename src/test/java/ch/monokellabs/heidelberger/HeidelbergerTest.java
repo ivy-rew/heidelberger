@@ -79,7 +79,7 @@ public class HeidelbergerTest
 		unresolvable.forEach(System.out::println);
 		System.out.println("not resolved: "+unresolvable.size()+" out of "+bibleRefs.size());
 
-		assertThat(unresolvable).hasSizeLessThan(6);
+		assertThat(unresolvable).hasSizeLessThan(5);
 	}
 
 	LocalSword sword = new LocalSword("GerSch");
@@ -101,6 +101,8 @@ public class HeidelbergerTest
 				"1. Kor 15, 25-26");
 		assertThat(CatechismParser.splitMultiRef("Jes; 40, 18-20.25"))
 			.containsExactly("Jes 40, 18-20", "Jes 40, 25");
+		assertThat(CatechismParser.splitMultiRef("Mt 5, 21-22.26.52"))
+			.containsExactly("Mt 5, 21-22", "Mt 26, 52");
 	}
 
 	@Test
