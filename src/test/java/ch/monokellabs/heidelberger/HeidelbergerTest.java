@@ -59,7 +59,7 @@ public class HeidelbergerTest
 	{
 		String html = CatechismLoader.getCatechismHtml();
 		List<String> bibleRefs = new CatechismParser(html).getAllRefs();
-		assertThat(bibleRefs).hasSize(860);
+		assertThat(bibleRefs).hasSize(861);
 
 		LocalSword sword = new LocalSword("GerSch");
 		List<String> unresolvable = bibleRefs.stream().map(ref -> {
@@ -79,7 +79,7 @@ public class HeidelbergerTest
 		unresolvable.forEach(System.out::println);
 		System.out.println("not resolved: "+unresolvable.size()+" out of "+bibleRefs.size());
 
-		assertThat(unresolvable).hasSizeLessThan(4);
+		assertThat(unresolvable).hasSizeLessThan(3);
 	}
 
 	LocalSword sword = new LocalSword("GerSch");
@@ -103,6 +103,8 @@ public class HeidelbergerTest
 			.containsExactly("Jes 40, 18-20", "Jes 40, 25");
 		assertThat(CatechismParser.splitMultiRef("Mt 5, 21-22.26.52"))
 			.containsExactly("Mt 5, 21-22", "Mt 26, 52");
+		assertThat(CatechismParser.splitMultiRef("Hebr 1,1, Apg 3, 22-24; 10, 43"))
+			.containsExactly("Hebr 1, 1", "Apg 3, 22-24", "Apg 10, 43");
 	}
 
 	@Test

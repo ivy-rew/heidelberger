@@ -164,7 +164,7 @@ public class CatechismParser {
 	private static final String QUEST108_JUD = "Jud 22, 23";
 	private static final String QUEST105_MT = "Mt 5, 21-22.26.52";
 	private static final String QUEST85_JOH = "2. Joh 10, 11";
-
+	private static final String QUEST19_HEBR = "Hebr 1,1, Apg 3, 22-24; 10, 43";
 
 	public static Stream<String> splitMultiRef(String ref)
 	{
@@ -192,6 +192,15 @@ public class CatechismParser {
 		else if (QUEST105_MT.equals(ref))
 		{
 			ref = ref.replace(".26.", "; 26, ");
+		}
+		else if (ref.startsWith(QUEST19_HEBR))
+		{
+			int book = ref.indexOf("Apg");
+			String a = "Hebr 1, 1";
+			String b = ref.substring(book);
+			List<String> apgPart = splitMultiRef(b).collect(Collectors.toList());
+			apgPart.add(0, a);
+			return apgPart.stream();
 		}
 
 		if (ref.lastIndexOf(".") > 3 && !ref.startsWith("Das"))
