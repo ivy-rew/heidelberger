@@ -110,7 +110,16 @@ public class CatechismParser {
 			.flatMap(CatechismParser::splitMultiRef)
 			.map(String::trim)
 			.filter(StringUtils::isNotBlank)
-			.map(SwordRef::parse)
+			.map(ref -> {
+				try
+				{
+					return SwordRef.parse(ref);
+				} catch (IllegalArgumentException ex)
+				{
+					System.err.println(ex);
+					return null;
+				}
+			})
 			.filter(Objects::nonNull)
 			.map(SwordRef::enKey)
 			.collect(Collectors.toList());
@@ -124,7 +133,7 @@ public class CatechismParser {
 				StringUtils.substringBeforeLast(ref, "."),
 				StringUtils.substringAfterLast(ref, ".")
 			};
-			SwordRef firstRef = SwordRef.parse(refs[0]);
+			SwordRef firstRef = SwordRef.parseOrNull(refs[0]);
 			if (firstRef != null)
 			{
 				String prefix = firstRef.getBook()+" "+firstRef.chapter+",";

@@ -21,7 +21,19 @@ public class SwordRef
 	public final int chapter;
 	private final String verseRange;
 
-	public static SwordRef parse(String ref)
+	public static SwordRef parseOrNull(String ref)
+	{
+		try
+		{
+			return parse(ref);
+		}
+		catch (IllegalArgumentException ex)
+		{
+			return null;
+		}
+	}
+
+	public static SwordRef parse(String ref) throws IllegalArgumentException
 	{
 		Matcher matcher = COMMANDMENT.matcher(ref.trim());
 		if (matcher.find())
@@ -39,8 +51,7 @@ public class SwordRef
 			String vers = matcher.group(4);
 			return new SwordRef(bookNo, book, chapter, vers);
 		}
-		System.err.println("not a ref: "+ref);
-		return null;
+		throw new IllegalArgumentException("not a ref: "+ref);
 	}
 
 	public SwordRef(String bookNo, String book, int chapter, String verseRange)

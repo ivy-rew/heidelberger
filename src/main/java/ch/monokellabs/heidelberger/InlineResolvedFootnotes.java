@@ -61,7 +61,7 @@ public class InlineResolvedFootnotes implements RefHandler
 			{
 				return sword.getPlainText(parsed.enKey());
 			}
-		} catch (BookException | NoSuchKeyException e) {
+		} catch (BookException | NoSuchKeyException | IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 		return verse; //unresolved; keep it for manual resolution
