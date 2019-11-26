@@ -89,7 +89,7 @@ public class HeidelbergerTest
 	{
 		assertThat(CatechismParser.splitMultiRef("Ps 51, 20; 122, 6-7"))
 			.containsExactly(
-					"Ps 51, 20",
+					"Ps 51, 18", // especially old testament seems to old and new verse numbers :-/
 					"Ps 122, 6-7");
 		assertThat(CatechismParser.splitMultiRef("Hebr 4, 2-3;10, 39"))
 		.containsExactly(

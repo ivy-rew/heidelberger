@@ -159,9 +159,11 @@ public class CatechismParser {
 
 	private static final String QUEST20_MOSE_20 = "Mose 20";
 	private static final String QUEST96_JES40 = "Jes; 40, 18-20.25";
+	private static final String QUEST123_PS = "Ps 51, 20";
 
 	public static Stream<String> splitMultiRef(String ref)
 	{
+		// unique anomalies::
 		if (QUEST96_JES40.equals(ref))
 		{ // only one known issue
 			return Stream.of("Jes 40, 18-20", "Jes 40, 25");
@@ -170,7 +172,12 @@ public class CatechismParser {
 		{
 			return Stream.of("2. "+ref);
 		}
-		else if (ref.lastIndexOf(".") > 3 && !ref.startsWith("Das"))
+		else if (ref.startsWith(QUEST123_PS))
+		{
+			ref = ref.replace("51, 20", "51, 18");
+		}
+
+		if (ref.lastIndexOf(".") > 3 && !ref.startsWith("Das"))
 		{
 			String[] refs = new String[] { // does not scale: only one separator :-/
 				StringUtils.substringBeforeLast(ref, "."),
