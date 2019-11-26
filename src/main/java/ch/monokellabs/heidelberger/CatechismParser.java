@@ -19,6 +19,7 @@ import org.jsoup.select.Elements;
 
 public class CatechismParser {
 
+	private static final String QUEST96_JES40 = "Jes; 40, 18-20.25";
 	private final Document html;
 
 	public CatechismParser(String html)
@@ -159,7 +160,11 @@ public class CatechismParser {
 
 	public static Stream<String> splitMultiRef(String ref)
 	{
-		if (ref.lastIndexOf(".") > 3 && !ref.startsWith("Das"))
+		if (QUEST96_JES40.equals(ref))
+		{ // only one known issue
+			return Stream.of("Jes 40, 18-20", "Jes 40, 25");
+		}
+		else if (ref.lastIndexOf(".") > 3 && !ref.startsWith("Das"))
 		{
 			String[] refs = new String[] { // does not scale: only one separator :-/
 				StringUtils.substringBeforeLast(ref, "."),

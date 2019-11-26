@@ -59,7 +59,7 @@ public class HeidelbergerTest
 	{
 		String html = CatechismLoader.getCatechismHtml();
 		List<String> bibleRefs = new CatechismParser(html).getAllRefs();
-		assertThat(bibleRefs).hasSize(858);
+		assertThat(bibleRefs).hasSize(860);
 
 		LocalSword sword = new LocalSword("GerSch");
 		List<String> unresolvable = bibleRefs.stream().map(ref -> {
@@ -99,7 +99,8 @@ public class HeidelbergerTest
 			.containsExactly(
 				"1. Kor 15, 21-22",
 				"1. Kor 15, 25-26");
-
+		assertThat(CatechismParser.splitMultiRef("Jes; 40, 18-20.25"))
+			.containsExactly("Jes 40, 18-20", "Jes 40, 25");
 	}
 
 	@Test
