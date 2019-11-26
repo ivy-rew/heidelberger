@@ -79,7 +79,7 @@ public class HeidelbergerTest
 		unresolvable.forEach(System.out::println);
 		System.out.println("not resolved: "+unresolvable.size()+" out of "+bibleRefs.size());
 
-		assertThat(unresolvable).hasSizeLessThan(18);
+		assertThat(unresolvable).hasSizeLessThan(10);
 	}
 
 	LocalSword sword = new LocalSword("GerSch");
@@ -111,6 +111,8 @@ public class HeidelbergerTest
 		assertThat(lookup(SwordRef.parse("Mt 10, 29-31"))).isEqualTo("Mt 10:29-31");
 
 		assertThat(lookup(SwordRef.parse("Das 1. Gebot"))).isEqualTo("Deu 5:7");
+		assertThat(lookup(SwordRef.parse("Röm3, 20"))).isEqualTo("Rom 3:20");
+		assertThat(lookup(SwordRef.parse("1. Petr.1, 2"))).isEqualTo("1 Pet 1:2");
 	}
 
 	private String lookup(SwordRef parseBibRef) throws NoSuchKeyException {

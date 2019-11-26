@@ -109,6 +109,7 @@ public class CatechismParser {
 			.flatMap(refSection -> Arrays.stream(refSection.ownText().split("/")))
 			.flatMap(CatechismParser::splitMultiRef)
 			.map(String::trim)
+			.filter(StringUtils::isNotBlank)
 			.map(SwordRef::parse)
 			.filter(Objects::nonNull)
 			.map(SwordRef::enKey)

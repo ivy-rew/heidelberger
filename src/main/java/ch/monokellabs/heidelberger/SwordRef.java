@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class SwordRef
 {
-	private static final Pattern DE_REF = Pattern.compile("([0-9]*)\\.*\\s*([^\\s]+) ?([0-9]+)[\\, ]*([0-9\\-]*)");
+	private static final Pattern DE_REF = Pattern.compile("([0-9]*)\\.*\\s*([A-Za-zöäü]+)\\.?[\\s]*([0-9]+)[\\, ]*([0-9\\-]*)");
 	private static final Pattern COMMANDMENT = Pattern.compile("Das ([0-9]*)\\. Gebot");
 
 
