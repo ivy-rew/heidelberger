@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -91,7 +93,7 @@ public class CatechismParser {
 	private void bibleRefs(Element content, RefHandler handler) {
 		getBibleRefElements(content)
 		.forEach(bibRef -> {
-			Stream<String> refs = Arrays.stream(bibRef.text().split("/"))
+			Stream<String> refs = CatechismParser.splitRefNode(bibRef)
 				.flatMap(CatechismParser::splitMultiRef)
 				.filter(Objects::nonNull);
 			handler.transform(bibRef, refs);
@@ -109,7 +111,7 @@ public class CatechismParser {
 		List<String> allRefs = new ArrayList<>(850);
 		for(Element refSection : getBibleRefElements(heidelberger()))
 		{
-			List<String> parsed = Arrays.stream(refSection.text().split("/"))
+			List<String> parsed = CatechismParser.splitRefNode(refSection)
 			.flatMap(CatechismParser::splitMultiRef)
 			.map(String::trim)
 			.filter(StringUtils::isNotBlank)
@@ -130,6 +132,29 @@ public class CatechismParser {
 			allRefs.addAll(parsed);
 		}
 		return allRefs;
+	}
+
+	private static final Pattern CHAPTER_VERSE_ONLY = Pattern.compile("^[0-9]+, ?[0-9]+");
+
+	public static Stream<String> splitRefNode(Element bibRef)
+	{
+		SwordRef last = null;
+		String[] parts = bibRef.text().split("/");
+		List<String> cleanedParts = new ArrayList<>();
+		for(String part : parts)
+		{
+			part = part.trim();
+			Matcher matcher = CHAPTER_VERSE_ONLY.matcher(part);
+			if (matcher.find() && matcher.regionStart() == 0 && last != null)
+			{
+				String cleaned = last.getBook()+" "+part;
+				System.out.println("cleaning '"+part+"' to: "+cleaned + " /in:"+bibRef);
+				part = cleaned;
+			}
+			cleanedParts.add(part);
+			last = SwordRef.parseOrNull(part);
+		}
+		return cleanedParts.stream();
 	}
 
 	public static Stream<String> splitMultiRef(String ref)
