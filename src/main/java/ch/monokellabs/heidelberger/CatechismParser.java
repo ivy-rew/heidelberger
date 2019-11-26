@@ -19,7 +19,6 @@ import org.jsoup.select.Elements;
 
 public class CatechismParser {
 
-	private static final String QUEST96_JES40 = "Jes; 40, 18-20.25";
 	private final Document html;
 
 	public CatechismParser(String html)
@@ -158,11 +157,18 @@ public class CatechismParser {
 		return cleanedParts.stream();
 	}
 
+	private static final String QUEST20_MOSE_20 = "Mose 20";
+	private static final String QUEST96_JES40 = "Jes; 40, 18-20.25";
+
 	public static Stream<String> splitMultiRef(String ref)
 	{
 		if (QUEST96_JES40.equals(ref))
 		{ // only one known issue
 			return Stream.of("Jes 40, 18-20", "Jes 40, 25");
+		}
+		else if (ref.startsWith(QUEST20_MOSE_20))
+		{
+			return Stream.of("2. "+ref);
 		}
 		else if (ref.lastIndexOf(".") > 3 && !ref.startsWith("Das"))
 		{

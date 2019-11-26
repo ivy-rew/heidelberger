@@ -62,7 +62,7 @@ public class InlineResolvedFootnotes implements RefHandler
 				return sword.getPlainText(parsed.enKey());
 			}
 		} catch (BookException | NoSuchKeyException | IllegalArgumentException e) {
-			e.printStackTrace();
+			System.out.println("failed to lookup: "+verse +" /ex="+e);
 		}
 		return verse; //unresolved; keep it for manual resolution
 	}
