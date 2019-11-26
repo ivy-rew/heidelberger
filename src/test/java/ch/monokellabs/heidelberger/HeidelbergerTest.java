@@ -79,7 +79,10 @@ public class HeidelbergerTest
 		unresolvable.forEach(System.out::println);
 		System.out.println("not resolved: "+unresolvable.size()+" out of "+bibleRefs.size());
 
-		assertThat(unresolvable).hasSizeLessThan(3);
+		assertThat(unresolvable).containsOnly(
+				"Job 16:35", // not in english translations > v 35 does not exist.
+				"Sir 3:27" // sirach is not part of the biblical canon
+		);
 	}
 
 	LocalSword sword = new LocalSword("GerSch");
