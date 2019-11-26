@@ -59,7 +59,7 @@ public class HeidelbergerTest
 	{
 		String html = CatechismLoader.getCatechismHtml();
 		List<String> bibleRefs = new CatechismParser(html).getAllRefs();
-		assertThat(bibleRefs).hasSizeGreaterThan(809);
+		assertThat(bibleRefs).hasSize(855);
 
 		LocalSword sword = new LocalSword("GerSch");
 		List<String> unresolvable = bibleRefs.stream().map(ref -> {

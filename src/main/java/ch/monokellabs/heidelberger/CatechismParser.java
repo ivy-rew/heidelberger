@@ -1,6 +1,7 @@
 
 package ch.monokellabs.heidelberger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -90,7 +91,7 @@ public class CatechismParser {
 	private void bibleRefs(Element content, RefHandler handler) {
 		getBibleRefElements(content)
 		.forEach(bibRef -> {
-			Stream<String> refs = Arrays.stream(bibRef.ownText().split("/"))
+			Stream<String> refs = Arrays.stream(bibRef.text().split("/"))
 				.flatMap(CatechismParser::splitMultiRef)
 				.filter(Objects::nonNull);
 			handler.transform(bibRef, refs);
@@ -105,8 +106,10 @@ public class CatechismParser {
 
 	public List<String> getAllRefs()
 	{
-		return getBibleRefElements(heidelberger()).stream()
-			.flatMap(refSection -> Arrays.stream(refSection.ownText().split("/")))
+		List<String> allRefs = new ArrayList<>(850);
+		for(Element refSection : getBibleRefElements(heidelberger()))
+		{
+			List<String> parsed = Arrays.stream(refSection.text().split("/"))
 			.flatMap(CatechismParser::splitMultiRef)
 			.map(String::trim)
 			.filter(StringUtils::isNotBlank)
@@ -116,13 +119,17 @@ public class CatechismParser {
 					return SwordRef.parse(ref);
 				} catch (IllegalArgumentException ex)
 				{
-					System.err.println(ex);
+					System.err.println("illegal ref in "+refSection+":\n"+ ex);
 					return null;
 				}
 			})
 			.filter(Objects::nonNull)
 			.map(SwordRef::enKey)
 			.collect(Collectors.toList());
+
+			allRefs.addAll(parsed);
+		}
+		return allRefs;
 	}
 
 	public static Stream<String> splitMultiRef(String ref)
