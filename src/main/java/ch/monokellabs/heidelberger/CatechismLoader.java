@@ -13,7 +13,7 @@ public class CatechismLoader
 {
     public static String getCatechismHtml() throws IOException, InterruptedException
     {
-    	File cached = new File(System.getProperty("java.io.tmpdir"), "/heidelberger/catechism.html");
+    	File cached = new File(getCacheDir(), "catechism.html");
     	if (cached.exists()){
     		return Files.readString(cached.toPath());
     	}
@@ -27,11 +27,34 @@ public class CatechismLoader
     	}
     }
 
+	private static File getCacheDir() {
+		return new File(System.getProperty("java.io.tmpdir"), "heidelberger");
+	}
+
 	private static String downloadCatechism() throws IOException, InterruptedException {
 		HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://www.heidelberger-katechismus.net/Heidelberger_Katechismus___Der_gesamte_Text-8261-0-227-50.html"))
                 .build();
 		HttpClient client = HttpClient.newHttpClient();
 		return client.send(request, BodyHandlers.ofString()).body();
+	}
+
+	public static File getCatechismImage(File cacheDir) throws IOException, InterruptedException
+	{
+		File cover = new File(cacheDir, "Heidelberger_Katechismus_1563.jpg");
+		if (!cover.exists())
+		{
+			HttpRequest request = HttpRequest.newBuilder()
+					.uri(URI.create("https://reformedforum.org/wp-content/blogs.dir/1/files/2012/03/Heidelberger_Katechismus_1563.jpg"))
+					.build();
+			HttpClient client = HttpClient.newHttpClient();
+			client.send(request, BodyHandlers.ofFile(cover.toPath(),
+					StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)).body();
+		}
+		return cover;
+	}
+
+	public static File getCatechismImage() throws IOException, InterruptedException {
+		return getCatechismImage(getCacheDir());
 	}
 }
