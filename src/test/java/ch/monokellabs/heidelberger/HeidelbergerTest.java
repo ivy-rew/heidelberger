@@ -43,6 +43,13 @@ public class HeidelbergerTest
 		String ref = sword.getPlainText("Prov 4:23");
 		System.out.println(ref);
 		assertThat(ref).contains("Mehr als alles andere behüte dein Herz");
+		assertThat(ref)
+			.as("split verse ref and it's text")
+			.startsWith("Proverbs 4:23 Mehr als alles andere behüte dein Herz");
+
+		assertThat(sword.getPlainText("1 Joh 1:10"))
+			.as("handle indexOutOfBounds in OSIS util with charm")
+			.startsWith("1 John 1:10 Wenn wir sagen, wir haben nicht");
 	}
 
 	@Test
