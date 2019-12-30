@@ -4,3 +4,6 @@
 
 © [heidelberger-katechismus.net](https://www.heidelberger-katechismus.net)
 
+Bibel Übersetzung: Schlachter (1951)
+© Genfer Bibelgeschellschaft
+
