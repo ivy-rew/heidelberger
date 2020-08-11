@@ -45,7 +45,7 @@ public class InlineResolvedFootnotes implements RefHandler
 //		[^forMd2]: tututut
 //		</pre>
 		String footRefsMd = footNotes.keySet().stream()
-				.map(key -> "[^"+key+"]")
+				.map(key -> key+" [^"+key+"]")
 				.collect(Collectors.joining(", "));
 		String footNootesMd = footNotes.entrySet().stream()
 			.map(entry -> "[^"+entry.getKey()+"]: "+entry.getValue())
